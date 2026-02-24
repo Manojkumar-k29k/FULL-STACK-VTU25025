@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  font-family: Arial;
+}
+
+header, footer {
+  background: #222;
+  color: white;
+  padding: 10px;
+  text-align: center;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 250px auto;
+}
+
+aside {
+  background: #444;
+  color: white;
+  padding: 15px;
+}
+
+main {
+  padding: 15px;
+}
+
+.filters input, .filters select {
+  display: block;
+  margin: 8px 0;
+}
