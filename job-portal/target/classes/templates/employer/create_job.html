@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Post New Job')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    
+    <div class="main-container">
+        <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+            <h2 style="margin-bottom: 2rem; color: var(--primary);">Post a New Job</h2>
+            
+            <form th:action="@{/jobs/create}" th:object="${job}" method="post">
+                <div class="form-group">
+                    <label for="title">Job Title</label>
+                    <input type="text" id="title" th:field="*{title}" class="form-control" required placeholder="e.g. Senior Software Engineer">
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <input type="text" id="category" th:field="*{category}" class="form-control" required placeholder="e.g. IT, Marketing, Finance">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" th:field="*{location}" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="salary">Salary (Optional)</label>
+                        <input type="text" id="salary" th:field="*{salary}" class="form-control" placeholder="e.g. $80,000 - $100,000">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="experienceRequired">Experience Required</label>
+                        <input type="text" id="experienceRequired" th:field="*{experienceRequired}" class="form-control" placeholder="e.g. 2-3 Years">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastDate">Application Deadline</label>
+                        <input type="date" id="lastDate" th:field="*{lastDate}" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="requiredSkills">Required Skills (Comma separated)</label>
+                    <input type="text" id="requiredSkills" th:field="*{requiredSkills}" class="form-control" placeholder="Java, Spring Boot, MySQL">
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Job Description</label>
+                    <textarea id="description" th:field="*{description}" class="form-control" rows="6" required></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn-primary">Publish Job Post</button>
+                    <a href="/employer/dashboard" class="btn-secondary" style="background: #ef4444;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

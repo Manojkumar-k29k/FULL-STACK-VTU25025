@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Home - Job Portal')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    
+    <div class="main-container">
+        <div class="hero">
+            <h1>Find Your Dream Job Today</h1>
+            <p style="font-size: 1.25rem; color: #475569; max-width: 600px; margin: 0 auto 2rem auto;">
+                Connect with top employers and discover opportunities that match your skills. The next step in your career begins right here.
+            </p>
+            <a href="/jobs" class="btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;">Explore Jobs</a>
+        </div>
+        
+        <!-- Feature Section -->
+        <div class="job-grid" style="margin-top: 4rem;">
+            <div class="glass-card" style="text-align: center;">
+                <h3>For Students</h3>
+                <p>Create a professional profile, upload your resume, and apply to top companies with one click.</p>
+                <a href="/register?roleType=STUDENT" class="btn-primary">Join as Student</a>
+            </div>
+            
+            <div class="glass-card" style="text-align: center;">
+                <h3>For Employers</h3>
+                <p>Post jobs, manage applications, and find the perfect candidates for your team.</p>
+                <a href="/register?roleType=EMPLOYER" class="btn-secondary">Join as Employer</a>
+            </div>
+            
+            <div class="glass-card" style="text-align: center;">
+                <h3>For Administrators</h3>
+                <p>Oversee platform operations, manage users, and monitor overall system activity.</p>
+                <a href="/login" class="btn-primary" style="background-color: #f59e0b;">Admin Login</a>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

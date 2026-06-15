@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Job Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav th:fragment="navbar" class="navbar">
+    <a href="/" class="navbar-brand">JobPortal Plus</a>
+    <div class="nav-links">
+		
+        <a href="/jobs">Browse Jobs</a>
+        <!-- Using sec:authorize logic to show right links -->
+        <a th:if="${#authorization.expression('!isAuthenticated()')}" href="/login">Login</a>
+        <a th:if="${#authorization.expression('!isAuthenticated()')}" href="/register" class="btn-primary" style="color:white;">Register</a>
+
+        <a th:if="${#authorization.expression('hasRole(''ROLE_STUDENT'')')}" href="/student/dashboard">Dashboard</a>
+        <a th:if="${#authorization.expression('hasRole(''ROLE_EMPLOYER'')')}" href="/employer/dashboard">Dashboard</a>
+        <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" href="/admin/dashboard">Dashboard</a>
+        
+        <form th:if="${#authorization.expression('isAuthenticated()')}" th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn-primary" style="margin-left: 1rem; padding: 0.4rem 1rem;">Logout</button>
+        </form>
+    </div>
+</nav>
+
+<th:block th:fragment="footer">
+<footer style="text-align: center; padding: 2rem; margin-top: auto; color: var(--gray);">
+    <p>&copy; 2026 JobPortal Plus. All rights reserved.</p>
+</footer>
+
+<!-- Chatbot Widget -->
+<div id="chatbot" style="position: fixed; bottom: 30px; right: 30px; width: 350px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; z-index: 9999; font-family: 'Inter', sans-serif; transition: all 0.3s ease; text-align: left;">
+    <div style="background: var(--primary); color: white; padding: 15px 20px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1);" onclick="toggleChat()">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 5px #10b981;"></div>
+            <span>JobPortal Support</span>
+        </div>
+        <span id="chat-toggle-icon" style="font-size: 0.8rem;">▲</span>
+    </div>
+    <div id="chat-body" style="display: none; flex-direction: column;">
+        <div id="chat-messages" style="height: 300px; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background: #f8fafc;">
+            <div style="background: white; padding: 10px 15px; border-radius: 15px 15px 15px 4px; align-self: flex-start; font-size: 0.95rem; max-width: 85%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #334155; border: 1px solid #e2e8f0;">
+                Hello! 👋 I'm your JobPortal Assistant. How can I help you today? Ask me about jobs, registration, or applying!
+            </div>
+        </div>
+        <div style="display: flex; border-top: 1px solid #e2e8f0; padding: 10px; background: white;">
+            <input type="text" id="chat-input" placeholder="Type your message..." style="flex: 1; border: 1px solid #cbd5e1; border-radius: 20px; padding: 10px 15px; outline: none; font-size: 0.95rem; transition: border-color 0.2s;" onkeypress="if(event.key === 'Enter') sendMessage()" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#cbd5e1'">
+            <button onclick="sendMessage()" style="background: var(--primary); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; margin-left: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleChat() {
+        const body = document.getElementById('chat-body');
+        const icon = document.getElementById('chat-toggle-icon');
+        if (body.style.display === 'none' || body.style.display === '') {
+            body.style.display = 'flex';
+            icon.textContent = '▼';
+            setTimeout(() => document.getElementById('chat-input').focus(), 100);
+        } else {
+            body.style.display = 'none';
+            icon.textContent = '▲';
+        }
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        appendMessage(msg, 'user');
+        input.value = '';
+
+        setTimeout(() => {
+            const reply = getBotResponse(msg.toLowerCase());
+            appendMessage(reply, 'bot');
+        }, 600);
+    }
+
+    function appendMessage(text, sender) {
+        const container = document.getElementById('chat-messages');
+        const div = document.createElement('div');
+        div.style.padding = '10px 15px';
+        div.style.fontSize = '0.95rem';
+        div.style.maxWidth = '85%';
+        div.style.lineHeight = '1.4';
+        div.style.whiteSpace = 'pre-wrap';
+        
+        if (sender === 'user') {
+            div.style.background = 'var(--primary)';
+            div.style.color = 'white';
+            div.style.alignSelf = 'flex-end';
+            div.style.borderRadius = '15px 15px 4px 15px';
+            div.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+        } else {
+            div.style.background = 'white';
+            div.style.color = '#334155';
+            div.style.alignSelf = 'flex-start';
+            div.style.borderRadius = '15px 15px 15px 4px';
+            div.style.border = '1px solid #e2e8f0';
+            div.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+        }
+        
+        div.textContent = text;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function getBotResponse(input) {
+        if (input.includes('student') || input.includes('employee') || input.includes('how to use')) {
+            return 'Welcome! Here is a quick guide:\n' +
+                   '👨‍🎓 For Students: Register, fill your profile, browse jobs, and apply using the OTP verification. Track your applications in the Student Dashboard.\n' +
+                   '🏢 For Employers: Register, create job postings, and review applicants from the Employer Dashboard where you can update their status.';
+        }
+        if (input.includes('apply')) return 'To apply for a job as a Student, navigate to Browse Jobs, select a job, and click "Apply". You will need to verify your application with a 6-digit OTP sent to your console/phone.';
+        if (input.includes('post a job') || input.includes('create job')) return 'As an Employer, go to your Employer Dashboard and click "Post New Job". Fill in the job details, requirements, and deadline.';
+        if (input.includes('dashboard')) return 'Your dashboard is your control center! Students can track application statuses, while Employers can manage active job postings and review candidates.';
+        if (input.includes('status') || input.includes('review')) return 'Employers can change an applicant\'s status (e.g., Shortlisted, Rejected, Under Review) from the "View Applicants" page. Students will see these updates on their dashboard.';
+        if (input.includes('register')) return 'You can register as either a Student or an Employer. Click "Register" on the top navigation bar.';
+        if (input.includes('otp')) return 'The OTP is printed in the server console for now. It is a 6-digit number required to finalize your job application securely.';
+        if (input.includes('hello') || input.includes('hi')) return 'Hello there! I am your JobPortal Assistant. You can ask me how to use the app, how to apply for jobs, or how employers can post jobs.';
+        return 'I am a simple chatbot. Try asking me "how to use", "how to apply", "how to post a job", or "what is OTP".';
+    }
+</script>
+</th:block>
+</body>
+</html>

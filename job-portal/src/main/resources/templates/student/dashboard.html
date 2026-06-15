@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Student Dashboard')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    
+    <div class="main-container">
+        <h2 style="margin-bottom: 2rem;">Welcome, <span th:text="${user.fullName}"></span>!</h2>
+        
+        <div class="job-grid">
+            <div class="glass-card">
+                <h3>My Profile</h3>
+                <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                <p><strong>Skills:</strong> <span th:text="${user.skills} ?: 'Not specified'"></span></p>
+                <button class="btn-primary" style="margin-top: 1rem;">Edit Profile (Coming Soon)</button>
+            </div>
+            
+            <div class="glass-card" style="grid-column: span 2;">
+                <h3>My Applications</h3>
+                <div th:if="${#lists.isEmpty(applications)}">
+                    <p>You haven't applied to any jobs yet.</p>
+                    <a href="/jobs" class="btn-primary" style="margin-top: 1rem;">Browse Jobs</a>
+                </div>
+                
+                <table th:unless="${#lists.isEmpty(applications)}" style="margin-top: 1rem;">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Applied Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="app : ${applications}">
+                            <td><a th:href="@{'/jobs/' + ${app.job.id}}" th:text="${app.job.title}" style="color: var(--primary); font-weight: 500;"></a></td>
+                            <td th:text="${app.job.employer.companyName}"></td>
+                            <td th:text="${app.appliedDate}"></td>
+                            <td>
+                                <span class="badge" th:classappend="${app.status == 'Shortlisted'} ? 'badge-success' : ''" th:text="${app.status}"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

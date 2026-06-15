@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin Dashboard')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    
+    <div class="main-container">
+        <h2 style="margin-bottom: 2rem; color: var(--dark);">Admin Dashboard</h2>
+        
+        <div class="job-grid">
+            <div class="glass-card" style="text-align: center; padding: 3rem;">
+                <h3 style="color: var(--primary); font-size: 2rem;">Manage Platform</h3>
+                <p>Admin platform management placeholder.</p>
+                <a href="/jobs" class="btn-primary" style="margin-top: 1rem;">View All Jobs</a>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

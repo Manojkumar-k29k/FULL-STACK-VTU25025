@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Verify Application OTP')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    
+    <div class="main-container" style="max-width: 600px; margin: 4rem auto; text-align: center;">
+        <div class="glass-card">
+            <h2 style="margin-bottom: 1rem;">Verify Application</h2>
+            <p style="margin-bottom: 2rem;">An OTP has been sent to your email (or check the application console logs). Please enter it below to confirm your application.</p>
+            
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}" style="color: red; margin-bottom: 1rem;"></div>
+            
+            <form th:action="@{'/jobs/' + ${jobId} + '/apply/verify'}" method="post" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <input type="text" name="otp" placeholder="Enter 6-digit OTP" required style="padding: 0.8rem; font-size: 1.2rem; text-align: center; border-radius: 8px; border: 1px solid var(--light-gray); width: 200px;">
+                <button type="submit" class="btn-primary" style="width: 200px;">Verify & Apply</button>
+            </form>
+            
+            <div style="margin-top: 1.5rem;">
+                <a th:href="@{'/jobs/' + ${jobId}}" style="color: var(--gray); text-decoration: underline;">Cancel</a>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

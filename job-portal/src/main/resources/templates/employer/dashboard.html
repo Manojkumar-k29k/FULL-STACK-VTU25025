@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Employer Dashboard')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    
+    <div class="main-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2>Employer Dashboard - <span th:text="${user.companyName}"></span></h2>
+            <a href="/jobs/create" class="btn-primary">+ Post New Job</a>
+        </div>
+        
+        <div class="glass-card">
+            <h3>My Posted Jobs</h3>
+            <div th:if="${#lists.isEmpty(jobs)}">
+                <p>You haven't posted any jobs yet.</p>
+            </div>
+            
+            <table th:unless="${#lists.isEmpty(jobs)}" style="margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Posted Date</th>
+                        <th>Deadline</th>
+                        <th>Applications</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="job : ${jobs}">
+                        <td th:text="${job.title}"></td>
+                        <td th:text="${job.postedDate}"></td>
+                        <td th:text="${job.lastDate}"></td>
+                        <td>
+                            <span class="badge" th:text="${#lists.size(job.applications)} + ' Applicants'"></span>
+                        </td>
+                        <td>
+                            <a th:href="@{'/jobs/' + ${job.id} + '/applicants'}" class="btn-secondary" style="font-size: 0.8rem; padding: 0.3rem 0.8rem;">View Applicants</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
